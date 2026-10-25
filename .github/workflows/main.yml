@@ -1,0 +1,110 @@
+name: Program 17 Autograding
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  autograding:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      # ------------------------------------------------
+      # File structure
+      # ------------------------------------------------
+
+      - name: Check reducer file
+        run: |
+          test -f src/reducer.js
+
+      - name: Check ProductList component
+        run: |
+          test -f src/components/ProductList.js
+
+      - name: Check Cart component
+        run: |
+          test -f src/components/Cart.js
+
+      - name: Check App.js
+        run: |
+          test -f src/App.js
+
+      # ------------------------------------------------
+      # Check useReducer
+      # ------------------------------------------------
+
+      - name: Check useReducer implementation
+        run: |
+          grep -Eq "useReducer" src/App.js
+
+      - name: Check reducer import
+        run: |
+          grep -Eq "reducer" src/App.js
+
+      # ------------------------------------------------
+      # Check reducer actions
+      # ------------------------------------------------
+
+      - name: Check ADD action
+        run: |
+          grep -Eq "ADD" src/reducer.js
+
+      - name: Check INCREASE action
+        run: |
+          grep -Eq "INCREASE" src/reducer.js
+
+      - name: Check DECREASE action
+        run: |
+          grep -Eq "DECREASE" src/reducer.js
+
+      - name: Check REMOVE action
+        run: |
+          grep -Eq "REMOVE" src/reducer.js
+
+      # ------------------------------------------------
+      # Check dispatch
+      # ------------------------------------------------
+
+      - name: Check dispatch usage
+        run: |
+          grep -Eq "dispatch" src/components/ProductList.js
+          grep -Eq "dispatch" src/components/Cart.js
+
+      # ------------------------------------------------
+      # Run automated tests
+      # ------------------------------------------------
+
+      - name: Run test cases
+        run: |
+          CI=true npm test -- --watchAll=false
+
+      # ------------------------------------------------
+      # Production build
+      # ------------------------------------------------
+
+      - name: Build React application
+        run: |
+          npm run build
+
+      - name: Autograding completed
+        run: |
+          echo "Program 17 autograding completed successfully."
